@@ -1,0 +1,17 @@
+import random
+import string
+
+def make_password_generator(length):
+    def generate_password():
+        # Набор возможных символов: буквы и цифры
+        chars = string.ascii_letters + string.digits
+        # Генерируем пароль случайным выбором символов
+        password = ''.join(random.choice(chars) for _ in range(length))
+        return password
+    return generate_password
+
+# Создание генератора паролей длиной 8 символов
+gen = make_password_generator(8)
+
+# Генерация нового пароля
+print(gen())
