@@ -1,0 +1,61 @@
+import re
+
+def apply_operation(left_operand, right_operand, operator):
+    """Применяет операцию над двумя числами."""
+    operations = {
+        '+': lambda x, y: x + y,
+        '-': lambda x, y: x - y,
+        '*': lambda x, y: x * y,
+        '/': lambda x, y: x / y if y != 0 else float('inf')
+    }
+    return operations.get(operator)(left_operand, right_operand)
+
+def calculate(tokens):
+    """Рекурсивная обработка списка токенов."""
+    stack = []
+    i = 0
+    while i < len(tokens):
+        token = tokens[i]
+        
+        if token.isdigit():  # Если токен - число, добавляем его в стек
+            stack.append(int(token))
+            
+        elif token in ('+', '-', '*', '/'):  # Обрабатываем бинарные операции
+            # Берём второй аргумент прямо из следующего токена
+            next_token = tokens[i + 1]
+            if next_token.isdigit():
+                second_arg = int(next_token)
+                first_arg = stack.pop()  # Получаем первый аргумент из стека
+                result = apply_operation(first_arg, second_arg, token)
+                stack.append(result)
+                i += 1  # Пропускаем следующий токен
+                
+        elif token == '(':  # Начинается новая группа в скобках
+            j = i
+            open_brackets = 1
+            while open_brackets > 0:
+                i += 1
+                if tokens[i] == ')':
+                    open_brackets -= 1
+                elif tokens[i] == '(':
+                    open_brackets += 1
+                    
+            sub_expr_tokens = tokens[j+1:i]
+            result = calculate(sub_expr_tokens)  # Рекурсивно считаем выражение в скобках
+            stack.append(result)
+            
+        i += 1
+    
+    return stack[-1]  # Итоговый результат - последний элемент стека
+
+def calc(expr):
+    """Основная функция расчета выражения."""
+    # Очищаем строку от пробелов и разбиваем её на токены
+    expr = expr.replace(" ", "")
+    tokens = re.findall(r'\\d+|\\S', expr)
+    return calculate(tokens)
+
+# Проверка функции
+expr = "2 + 3 * (4 - 5)"
+result = calc(expr)
+print(f'Выражение "{expr}" равно {result}')  # Результат: -1
