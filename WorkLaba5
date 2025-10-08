@@ -1,0 +1,43 @@
+from datetime import datetime as dt
+
+def check_event_time(event):
+    start_time = dt.strptime(event['start'], "%H:%M")
+    end_time = dt.strptime(event['end'], "%H:%M")
+    return start_time < end_time
+
+def find_conflicts(events):
+    conflicts = []
+    events.sort(key=lambda event: event['start'])
+    
+    for i in range(len(events)):
+        current_start = dt.strptime(events[i]['start'], "%H:%M")
+        current_end = dt.strptime(events[i]['end'], "%H:%M")
+        
+        for j in range(i + 1, len(events)):
+            next_start = dt.strptime(events[j]['start'], "%H:%M")
+            next_end = dt.strptime(events[j]['end'], "%H:%M")
+            
+            # Конфликт: если конец текущего события позже начала следующего
+            if current_end > next_start:
+                conflict_message = f"Конфликт: {events[i]['title']} ({current_start.strftime('%H:%M')}-{current_end.strftime('%H:%M')}) и {events[j]['title']} ({next_start.strftime('%H:%M')}-{next_end.strftime('%H:%M')})"
+                conflicts.append(conflict_message)
+    
+    return conflicts
+
+# Список событий
+events = [
+    {"title": "Math", "start": "09:00", "end": "10:30"},
+    {"title": "English", "start": "10:00", "end": "11:00"}
+]
+
+# Проверка корректности временных промежутков
+for event in events:
+    if not check_event_time(event):
+        raise ValueError(f"Временной промежуток некорректен: {event['title']}, начало '{event['start']}', конец '{event['end']}'")
+
+# Нахождение конфликтов
+conflicts = find_conflicts(events)
+
+# Вывод найденных конфликтов
+for conflict in conflicts:
+    print(conflict)
