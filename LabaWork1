@@ -1,0 +1,16 @@
+def process_words(words):
+    # Приводим все слова к нижнему регистру используя map и lambda
+    lower_case_words = list(map(lambda word: word.lower(), words))
+    
+    # Оставляем только слова длиной больше 3 символов используя filter и lambda
+    filtered_words = list(filter(lambda word: len(word) > 3, lower_case_words))
+    
+    # Сортируем список по алфавиту
+    sorted_words = sorted(filtered_words)
+    
+    return sorted_words
+
+# Проверяем работу функции
+words = ["Python", "is", "Great", "AI"]
+result = process_words(words)
+print(result)  # Output: ['great', 'python']
