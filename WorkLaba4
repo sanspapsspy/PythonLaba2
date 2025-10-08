@@ -1,0 +1,50 @@
+from collections import Counter
+import re
+
+def analyze_text(text, top_n=10, min_word_length=None):
+    """
+    Анализирует введённый пользователем текст, подсчитывая количество слов и символов, 
+    выводя словарь частот слов и топ-N самых частых слов.
+    Дополнительно поддерживает фильтрацию слов по длине.
+    """
+    # Приведение текста к нижнему регистру и очистка от знаков препинания
+    cleaned_text = re.sub(r'[^\\w\\s]', '', text).lower()
+    
+    # Разделяем текст на слова
+    words = cleaned_text.split()
+    
+    # Подсчёт количества слов и символов
+    num_words = len(words)
+    num_chars = sum(len(word) for word in words)
+    
+    print(f"\\nАнализ введённого текста:\\n")
+    print(f"Количество слов: {num_words}")
+    print(f"Количество символов: {num_chars}\\n")
+    
+    # Словарь частот слов
+    freq_dict = Counter(words)
+    
+    # Применяем фильтры, если задан минимум длины слова
+    if min_word_length is not None:
+        freq_dict = {word: count for word, count in freq_dict.items() if len(word) >= min_word_length}
+    
+    # Определяем топ-N наиболее распространённых слов
+    most_common = freq_dict.most_common(top_n)
+    
+    print(f"Топ-{top_n} наиболее частых слов:")
+    for word, count in most_common:
+        print(f"{word}: {count}")
+    
+    # Показываем полный словарь частот
+    print("\\nПолный словарь частот слов:")
+    for word, count in freq_dict.items():
+        print(f"{word}: {count}")
+
+# Запрашиваем текст у пользователя
+input_text = input("Введите текст для анализа: ")
+
+# Параметры для анализа (можно изменить)
+top_n = 5
+min_word_length = 3
+
+analyze_text(input_text, top_n=top_n, min_word_length=min_word_length)
