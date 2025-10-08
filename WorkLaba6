@@ -1,0 +1,56 @@
+import random
+
+# 1. Генерация случайной суммы броска (2...12)
+def roll():
+    return random.randint(2, 12)
+
+# 2. Игра одного раунда
+def play_round(balance, bet):
+    player_roll = roll()
+    computer_roll = roll()
+    
+    if player_roll > computer_roll:
+        result = f"you={player_roll}, cpu={computer_roll} → +{bet}"
+        new_balance = balance + bet
+    elif player_roll < computer_roll:
+        result = f"you={player_roll}, cpu={computer_roll} → -{bet}"
+        new_balance = balance - bet
+    else:
+        result = f"you={player_roll}=cpu → 0"
+        new_balance = balance
+    
+    return result, new_balance
+
+# 3. Основной игровой цикл
+def run_game(start_balance, rounds, bet_strategy):
+    balance = start_balance
+    log = []
+    
+    for r in range(1, rounds + 1):
+        # Определяем ставку стратегии
+        bet = bet_strategy(balance, r)
+        
+        # Валидируем ставку
+        if bet <= 0 or bet > balance:
+            raise ValueError(f"Слишком большая ставка или отрицательная ставка: {bet}. Текущий баланс: {balance}")
+        
+        # Проигрываем раунд
+        round_result, balance = play_round(balance, bet)
+        log.append(f"R{r}: {round_result}, balance={balance}")
+    
+    final_log = "\\n".join(log)
+    return final_log, balance
+
+# Пример стратегии ставок: фиксированная ставка в размере 1% от начального капитала
+def fixed_percentage_bet(balance, round_idx):
+    initial_capital = 1000  # Предполагается, что начальный капитал постоянный
+    return max(1, int(initial_capital * 0.01))
+
+# Пример запуска игры
+initial_balance = 1000
+number_of_rounds = 10
+
+log, final_balance = run_game(initial_balance, number_of_rounds, fixed_percentage_bet)
+
+print(log)
+print(f"Final balance: {final_balance}")
